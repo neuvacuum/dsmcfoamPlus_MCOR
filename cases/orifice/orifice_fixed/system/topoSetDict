@@ -1,0 +1,27 @@
+FoamFile {version 2.0; format ascii; class dictionary; object topoSetDict;}
+actions (
+{name apertureCells; type cellSet; action new; source cylinderToCell;
+sourceInfo {p1 (-0.0070000000000000001 0 0); p2 (0.0070000000000000001 0 0); radius 0.001;}}
+{name aperture; type faceSet; action new; source boxToFace;
+sourceInfo {box (-1e-10 -0.0070000000000000001 -0.0070000000000000001)
+(1e-10 0.0070000000000000001 0.0070000000000000001);}}
+{name aperture; type faceSet; action subset; source cellToFace;
+sourceInfo {set apertureCells; option all;}}
+{name aperture; type faceZoneSet; action new; source setToFaceZone;
+sourceInfo {faceSet aperture;}}
+{name partition; type faceSet; action new; source boxToFace;
+sourceInfo {box (-1e-10 -0.0070000000000000001 -0.0070000000000000001)
+(1e-10 0.0070000000000000001 0.0070000000000000001);}}
+{name partition; type faceSet; action delete; source faceToFace;
+sourceInfo {set aperture;}}
+{name partition; type faceZoneSet; action new; source setToFaceZone;
+sourceInfo {faceSet partition;}}
+{name highFar; type faceSet; action new; source patchToFace;
+sourceInfo {name highFar;}}
+{name highFar; type faceZoneSet; action new; source setToFaceZone;
+sourceInfo {faceSet highFar;}}
+{name lowFar; type faceSet; action new; source patchToFace;
+sourceInfo {name lowFar;}}
+{name lowFar; type faceZoneSet; action new; source setToFaceZone;
+sourceInfo {faceSet lowFar;}}
+);

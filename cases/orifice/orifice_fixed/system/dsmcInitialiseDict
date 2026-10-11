@@ -1,0 +1,11 @@
+FoamFile {version 2.0; format ascii; class dictionary; object dsmcInitialiseDict;}
+configurations (
+configuration {type dsmcZoneFill; zoneName highReservoir;
+numberDensities {HS 1.4338970564607043e+21;} translationalTemperature 300.0;
+rotationalTemperature 0; vibrationalTemperature 0; electronicTemperature 0;
+velocity (0 0 0);}
+configuration {type dsmcZoneFill; zoneName lowReservoir;
+numberDensities {HS 1.4338970564607044e+19;} translationalTemperature 300.0;
+rotationalTemperature 0; vibrationalTemperature 0; electronicTemperature 0;
+velocity (0 0 0);}
+);

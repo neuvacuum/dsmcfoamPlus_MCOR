@@ -1,0 +1,5 @@
+FoamFile {version 2.0; format ascii; class dictionary; object refineMeshDict;}
+
+set outerRefine; coordinateSystem global;
+globalCoeffs {tan1 (0 1 0); tan2 (0 0 1);}
+directions (tan1 tan2); useHexTopology false; geometricCut false; writeMesh false;

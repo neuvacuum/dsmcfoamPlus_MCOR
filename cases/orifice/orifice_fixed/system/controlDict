@@ -1,0 +1,8 @@
+FoamFile {version 2.0; format ascii; class dictionary; object controlDict;}
+
+application dsmcFoam+; nTerminalOutputs 20;
+startFrom startTime; startTime 0; stopAt endTime;
+endTime 0.00039999999999999996; deltaT 9.9999999999999995e-08;
+writeControl timeStep; writeInterval 100; purgeWrite 0;
+writeFormat ascii; writePrecision 17; writeCompression uncompressed;
+timeFormat general; timePrecision 12; runTimeModifiable no; adjustTimeStep no;

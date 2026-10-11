@@ -1,0 +1,44 @@
+FoamFile {version 2.0; format ascii; class dictionary; object dsmcProperties;}
+
+nEquivalentParticles 119491421.37172537;
+BinaryCollisionModel LarsenBorgnakkeVariableHardSphere;
+LarsenBorgnakkeVariableHardSphereCoeffs {rotationalRelaxationCollisionNumber 5;}
+collisionPartnerSelectionModel noTimeCounter; typeIdList (HS);
+moleculeProperties {HS {mass 6.6299999999999996e-26; diameter 4.1700000000000001e-10;
+omega 0.5; alpha 1; rotationalDegreesOfFreedom 0;}}
+
+adaptiveProperties {
+active false;
+timeStepAdaptation false;
+subCellAdaptation false;
+cellWeightAdaptation false;
+cellWeightAdaptationMode runtimeCellWeightResampling;
+lightweightCellWeightingInterval 1;
+adaptationInterval 0;
+conservationWriteInterval 0;
+targetParticlesPerSubCell 30;
+assumedSubCellsPerCell 1;
+occupancyTargetTolerance 0.05;
+maxFrozenRemapChildren 64;
+frozenGlobalMassCorrection false;
+runtimeRemapMomentumEnergyCorrection true;
+runtimeLowOccupancyTargetBoost false;
+runtimeLowOccupancyTargetBoostHistory false;
+runtimeLowOccupancyTargetBoostFocus false;
+runtimeEmptyCellRefill false;
+enableConservationMonitor true;
+collisionWeighting true;
+collisionCandidateTimeMode dynamicMajorant;
+collisionCandidateSelectionMode uniformCell;
+collisionUnequalWeightHandlingMode partialSplitToMinWeight;
+collisionResidualCloneHandlingMode stochasticHeavyUpdate;
+collisionResidualClonesParticipateSameStep true;
+collisionWeightAutoEqualise false;
+collisionAcceptanceSafetyFactor 1;
+writeCollisionWeightSummary true;
+postCollisionOccupancyCleanup false;
+maxParticlesPerCellFactor 1;
+occupancyLimitMergeInterval 1;
+occupancyLimitMergePassesPerCell 0;
+occupancyLimitMergeVelocitySpreadLimit 1e30;
+}

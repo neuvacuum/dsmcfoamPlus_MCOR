@@ -1,0 +1,17 @@
+FoamFile {version 2.0; format ascii; class dictionary; object fieldPropertiesDict;}
+dsmcFields (
+field {
+    fieldModel dsmcVolFields;
+    timeProperties {timeOption write; resetAtOutput on; resetAtOutputUntilTime 1.04;}
+    dsmcVolFieldsProperties {fieldName N2cold; typeIds (N2cold);
+        measureMeanFreePath true; averagingAcrossManyRuns false;}
+}
+field {
+    fieldModel dsmcAdaptiveCellWeightDiagnostics;
+    timeProperties {timeOption write; resetAtOutput on;}
+    dsmcAdaptiveCellWeightDiagnosticsProperties {fieldName mixture;
+        typeIds (N2cold); sampleInterval 1;
+        targetParticlesPerSubCell 30; assumedSubCellsPerCell 1;
+        writeDiagnosticDictionary true;}
+}
+);

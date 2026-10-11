@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+set -Eeo pipefail
+ulimit -c 0
+usage() {
+    echo "Usage: cases/Allrun FAMILY/CASE NEW_OUTPUT [--ranks N] [--steps N] [--prepare-only]"
+}
+if [[ ${1:-} == --help ]]; then
+    usage
+    exit 0
+fi
+if [[ $# -lt 2 ]]; then
+    usage >&2
+    exit 2
+fi
+root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
+case_id=$1
+output=$2
+shift 2
+ranks=1
+steps=
+prepare_only=false
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --ranks|--steps)
+            if [[ $# -lt 2 || ! $2 =~ ^[1-9][0-9]*$ ]]; then
+                echo "$1 requires a positive integer." >&2
+                exit 2
+            fi
+            if [[ $1 == --ranks ]]; then ranks=$2; else steps=$2; fi
+            shift 2
+            ;;
+        --prepare-only) prepare_only=true; shift ;;
+        *) usage >&2; exit 2 ;;
+    esac
+done
+if [[ ! $case_id =~ ^(couette|plate|orifice)/[A-Za-z0-9_]+$ ]]; then
+    echo "Select a case under couette/, plate/ or orifice/." >&2
+    exit 2
+fi
+template=$root/cases/$case_id
+test -f "$template/system/controlDict"
+if [[ -e $output || -L $output || $output == *[[:space:]]* ]]; then
+    echo "Choose a new output directory with a whitespace-free path." >&2
+    exit 2
+fi
+source "$root/etc/bashrc"
+commands=(blockMesh checkMesh foamDictionary dsmcInitialise+ dsmcFoam+)
+[[ $case_id == orifice/* ]] && commands+=(topoSet refineMesh createBaffles)
+[[ $ranks -gt 1 ]] && commands+=(decomposePar mpirun reconstructPar)
+for command in "${commands[@]}"; do
+    command -v "$command" >/dev/null || { echo "Missing tool: $command" >&2; exit 1; }
+done
+mkdir -- "$output"
+output=$(cd -- "$output" && pwd -P)
+trap 'status=$?; printf "CASE_FAILED: inspect %s/log.*\n" "$output" >&2; exit "$status"' ERR
+cp -R "$template/." "$output/"
+"$root/tests/check-installation.sh" > "$output/log.installation" 2>&1
+exec > >(tee "$output/log.Allrun") 2>&1
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
+printf 'case=%s\nranks=%s\nsteps_override=%s\nprepare_only=%s\nsolver_root=%s\n' \
+    "$case_id" "$ranks" "${steps:-original}" "$prepare_only" "$root" > "$output/run-settings.txt"
+set_entry() {
+    foamDictionary "$output/$1" -entry "$2" -set "$3" >> "$output/log.configure" 2>&1
+}
+if [[ -n $steps ]]; then
+    dt=$(foamDictionary "$output/system/controlDict" -entry deltaT -value)
+    end=$(awk -v dt="$dt" -v steps="$steps" 'BEGIN { printf "%.17g", dt * steps }')
+    set_entry system/controlDict endTime "$end"
+    set_entry system/controlDict writeControl timeStep
+    set_entry system/controlDict writeInterval "$steps"
+    set_entry system/controlDict nTerminalOutputs 1
+fi
+if [[ $ranks -gt 1 ]]; then
+    if [[ ! -f $output/system/decomposeParDict ]]; then
+        cp "$root/cases/support/decomposeParDict" "$output/system/decomposeParDict"
+    fi
+    set_entry system/decomposeParDict numberOfSubdomains "$ranks"
+    set_entry constant/dsmcProperties adaptiveProperties.allowRuntimeMomentParallel true
+fi
+run_logged() {
+    local label=$1
+    shift
+    printf 'Running %s\n' "$label"
+    "$@" > "$output/log.$label" 2>&1
+}
+run_logged blockMesh blockMesh -case "$output"
+if [[ $case_id == orifice/* ]]; then
+    run_logged topoSetRefine topoSet -case "$output" -dict "$output/system/topoSetRefineDict"
+    run_logged refineMesh refineMesh -case "$output" -overwrite
+    run_logged topoSetNearRefine topoSet -case "$output" -dict "$output/system/topoSetNearRefineDict"
+    run_logged refineNearMesh refineMesh -case "$output" -dict "$output/system/refineNearMeshDict" -overwrite
+    run_logged topoSet topoSet -case "$output"
+    run_logged createBaffles createBaffles -case "$output" -overwrite
+fi
+run_logged checkMesh checkMesh -case "$output"
+grep -F 'Mesh OK.' "$output/log.checkMesh"
+run_logged dsmcInitialise dsmcInitialise+ -case "$output"
+bound=$(foamDictionary "$output/constant/cpcSigmaTcRMax" -entry internalField -value)
+set_entry 0/dsmcSigmaTcRMax internalField "$bound"
+if [[ $ranks -gt 1 ]]; then
+    run_logged decomposePar decomposePar -case "$output"
+fi
+if [[ $prepare_only == true ]]; then
+    printf 'CASE_PREPARED\nCase: %s\n' "$output"
+    exit 0
+fi
+if [[ $ranks -gt 1 ]]; then
+    run_logged dsmcFoam mpirun -np "$ranks" "$FOAM_USER_APPBIN/dsmcFoam+" -parallel -case "$output"
+else
+    run_logged dsmcFoam "$FOAM_USER_APPBIN/dsmcFoam+" -case "$output"
+fi
+grep -F 'End main' "$output/log.dsmcFoam"
+if [[ $ranks -gt 1 ]]; then
+    run_logged reconstructPar reconstructPar -case "$output" -latestTime
+fi
+printf 'CASE_RUN_COMPLETE\nCase: %s\n' "$output"

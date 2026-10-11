@@ -1,0 +1,22 @@
+# Source OpenFOAM v1706/etc/bashrc before sourcing this file.
+if [[ -z ${BASH_VERSION:-} ]]; then
+    echo "MCOR requires Bash." >&2
+    return 1
+fi
+if [[ ${WM_PROJECT_VERSION:-} != v1706 || -z ${WM_OPTIONS:-} ]]; then
+    echo "Source the OpenFOAM v1706 environment first." >&2
+    return 1
+fi
+_mcor_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P) || return 1
+if [[ $_mcor_root == *[[:space:]]* ]]; then
+    echo "OpenFOAM wmake requires an installation path without whitespace." >&2
+    unset _mcor_root
+    return 1
+fi
+export MCOR_ROOT=$_mcor_root
+export WM_PROJECT_USER_DIR=$MCOR_ROOT
+export FOAM_USER_LIBBIN=$MCOR_ROOT/platforms/$WM_OPTIONS/lib
+export FOAM_USER_APPBIN=$MCOR_ROOT/platforms/$WM_OPTIONS/bin
+export PATH=$FOAM_USER_APPBIN:$PATH
+export LD_LIBRARY_PATH=$FOAM_USER_LIBBIN:${LD_LIBRARY_PATH:-}
+unset _mcor_root

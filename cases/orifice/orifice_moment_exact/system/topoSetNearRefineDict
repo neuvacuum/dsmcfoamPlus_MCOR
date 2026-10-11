@@ -1,0 +1,6 @@
+FoamFile {version 2.0; format ascii; class dictionary; object topoSetDict;}
+
+actions (
+{name nearRefine; type cellSet; action new; source cylinderToCell;
+sourceInfo {p1 (-0.001 0 0); p2 (0.001 0 0); radius 0.001;}}
+);

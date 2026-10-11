@@ -1,0 +1,81 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  MCOR1_0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version         2;
+    format          ascii;
+    class           dictionary;
+    location        "constant";
+    object          dsmcProperties;
+}
+
+nEquivalentParticles 2e+11;
+
+BinaryCollisionModel LarsenBorgnakkeVariableHardSphere;
+
+LarsenBorgnakkeVariableHardSphereCoeffs
+{
+    rotationalRelaxationCollisionNumber 5;
+}
+
+collisionPartnerSelectionModel noTimeCounter;
+
+typeIdList      ( N2cold );
+
+moleculeProperties
+{
+    N2cold
+    {
+        mass            4.65e-26;
+        diameter        4.17e-10;
+        omega           0.74;
+        alpha           1.36;
+        rotationalDegreesOfFreedom 2;
+    }
+}
+
+adaptiveProperties
+{
+    active          false;
+    timeStepAdaptation false;
+    subCellAdaptation false;
+    cellWeightAdaptation false;
+    cellWeightAdaptationMode runtimeCellWeightResampling;
+    lightweightCellWeightingInterval 1;
+    adaptationInterval 0;
+    conservationWriteInterval 0;
+    targetParticlesPerSubCell 30;
+    assumedSubCellsPerCell 1;
+    occupancyTargetTolerance 0.05;
+    maxFrozenRemapChildren 64;
+    frozenGlobalMassCorrection false;
+    runtimeRemapMomentumEnergyCorrection true;
+    runtimeLowOccupancyTargetBoost false;
+    runtimeLowOccupancyTargetBoostHistory false;
+    runtimeLowOccupancyTargetBoostFocus false;
+    runtimeEmptyCellRefill false;
+    enableConservationMonitor true;
+    collisionWeighting true;
+    collisionCandidateTimeMode dynamicMajorant;
+    collisionCandidateSelectionMode uniformCell;
+    collisionUnequalWeightHandlingMode partialSplitToMinWeight;
+    collisionResidualCloneHandlingMode stochasticHeavyUpdate;
+    collisionResidualClonesParticipateSameStep true;
+    collisionWeightAutoEqualise false;
+    collisionAcceptanceSafetyFactor 1;
+    writeCollisionWeightSummary true;
+    postCollisionOccupancyCleanup false;
+    maxParticlesPerCellFactor 1;
+    occupancyLimitMergeInterval 1;
+    occupancyLimitMergePassesPerCell 0;
+    occupancyLimitMergeVelocitySpreadLimit 1e+30;
+    allowRuntimeMomentParallel true;
+}
+
+
+// ************************************************************************* //

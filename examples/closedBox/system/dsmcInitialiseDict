@@ -1,0 +1,14 @@
+FoamFile { version 2.0; format ascii; class dictionary; object dsmcInitialiseDict; }
+configurations
+(
+    configuration
+    {
+        type dsmcMeshFill;
+        numberDensities { N2 2e20; O2 1e20; }
+        translationalTemperature 300;
+        rotationalTemperature 300;
+        vibrationalTemperature 0;
+        electronicTemperature 0;
+        velocity (0 0 0);
+    }
+);

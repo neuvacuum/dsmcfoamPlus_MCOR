@@ -1,0 +1,103 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  MCOR1_0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version         2;
+    format          ascii;
+    class           dictionary;
+    location        "constant";
+    object          dsmcProperties;
+}
+
+nEquivalentParticles 4.29576e+11;
+
+BinaryCollisionModel LarsenBorgnakkeVariableHardSphere;
+
+LarsenBorgnakkeVariableHardSphereCoeffs
+{
+    rotationalRelaxationCollisionNumber 5;
+    inverseZvFormulation "pre-2008";
+}
+
+collisionPartnerSelectionModel noTimeCounter;
+
+typeIdList      ( N2 O2 );
+
+moleculeProperties
+{
+    N2
+    {
+        mass            4.65e-26;
+        diameter        4.17e-10;
+        omega           0.74;
+        alpha           1.36;
+        rotationalDegreesOfFreedom 2;
+        nVibrationalModes 1;
+        characteristicVibrationalTemperature ( 3371 );
+        dissociationTemperature 113500;
+        Zref            ( 52560 );
+        referenceTempForZref ( 3371 );
+        ionisationTemperature 180798;
+        charge          0;
+    }
+    O2
+    {
+        mass            5.312e-26;
+        diameter        4.07e-10;
+        omega           0.77;
+        alpha           1.4;
+        rotationalDegreesOfFreedom 2;
+        nVibrationalModes 1;
+        characteristicVibrationalTemperature ( 2256 );
+        dissociationTemperature 59500;
+        Zref            ( 17900 );
+        referenceTempForZref ( 2256 );
+        ionisationTemperature 140066;
+        charge          0;
+    }
+}
+
+adaptiveProperties
+{
+    active          true;
+    timeStepAdaptation false;
+    subCellAdaptation false;
+    cellWeightAdaptation true;
+    cellWeightAdaptationMode runtimeMomentConservative;
+    lightweightCellWeightingInterval 1;
+    adaptationInterval 0;
+    conservationWriteInterval 0;
+    targetParticlesPerSubCell 50;
+    assumedSubCellsPerCell 1;
+    occupancyTargetTolerance 0.05;
+    maxFrozenRemapChildren 64;
+    frozenGlobalMassCorrection false;
+    runtimeRemapMomentumEnergyCorrection false;
+    runtimeLowOccupancyTargetBoost false;
+    runtimeLowOccupancyTargetBoostHistory false;
+    runtimeLowOccupancyTargetBoostFocus false;
+    runtimeEmptyCellRefill false;
+    enableConservationMonitor true;
+    collisionWeighting true;
+    collisionCandidateTimeMode dynamicMajorant;
+    collisionCandidateSelectionMode uniformCell;
+    collisionUnequalWeightHandlingMode partialSplitToMinWeight;
+    collisionResidualCloneHandlingMode exactClone;
+    collisionResidualClonesParticipateSameStep true;
+    collisionWeightAutoEqualise false;
+    collisionAcceptanceSafetyFactor 1;
+    writeCollisionWeightSummary true;
+    postCollisionOccupancyCleanup true;
+    maxParticlesPerCellFactor 1;
+    occupancyLimitMergeInterval 1;
+    occupancyLimitMergePassesPerCell 0;
+    occupancyLimitMergeVelocitySpreadLimit 1e+30;
+}
+
+
+// ************************************************************************* //

@@ -1,0 +1,12 @@
+platforms/
+**/lnInclude/
+**/Make/linux*/
+logs/
+runs/
+*.log
+log.*
+core
+core.*
+.DS_Store
+*~
+*.swp

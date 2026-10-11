@@ -1,0 +1,24 @@
+FoamFile {version 2.0; format ascii; class dictionary; object boundariesDict;}
+dsmcPatchBoundaries (
+boundary {patchBoundaryProperties {patchName partition_high;}
+boundaryModel dsmcDiffuseWallPatch;
+dsmcDiffuseWallPatchProperties {velocity (0 0 0); temperature 300.0;}}
+boundary {patchBoundaryProperties {patchName partition_low;}
+boundaryModel dsmcDiffuseWallPatch;
+dsmcDiffuseWallPatchProperties {velocity (0 0 0); temperature 300.0;}}
+boundary {patchBoundaryProperties {patchName highFar;}
+boundaryModel dsmcDeletionPatch; dsmcDeletionPatchProperties {allSpecies yes;}}
+boundary {patchBoundaryProperties {patchName lowFar;}
+boundaryModel dsmcDeletionPatch; dsmcDeletionPatchProperties {allSpecies yes;}}
+);
+dsmcCyclicBoundaries ();
+dsmcGeneralBoundaries (
+boundary {generalBoundaryProperties {patchName highFar;}
+boundaryModel dsmcFreeStreamInflowPatch;
+dsmcFreeStreamInflowPatchProperties {typeIds (HS); numberDensities {HS 1.4338970564607043e+21;}
+translationalTemperature 300.0; rotationalTemperature 0; velocity (0 0 0);}}
+boundary {generalBoundaryProperties {patchName lowFar;}
+boundaryModel dsmcFreeStreamInflowPatch;
+dsmcFreeStreamInflowPatchProperties {typeIds (HS); numberDensities {HS 1.4338970564607044e+19;}
+translationalTemperature 300.0; rotationalTemperature 0; velocity (0 0 0);}}
+);

@@ -1,0 +1,5 @@
+FoamFile {version 2.0; format ascii; class dictionary; object createBafflesDict;}
+internalFacesOnly true;
+baffles {partition {type faceZone; zoneName partition;
+patches {master {name partition_high; type wall;}
+slave {name partition_low; type wall;}}}}

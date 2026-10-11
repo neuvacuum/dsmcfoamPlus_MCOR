@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -eo pipefail
+root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+source "$root/etc/bashrc"
+jobs=${1:-1}
+if [[ ! $jobs =~ ^[1-9][0-9]*$ || $# -gt 1 ]]; then
+    echo "Usage: ./Allwmake [positive-number-of-jobs]" >&2
+    exit 2
+fi
+for tool in wmake g++ make; do
+    command -v "$tool" >/dev/null || { echo "Missing tool: $tool" >&2; exit 1; }
+done
+for lib in finiteVolume meshTools dynamicMesh dynamicFvMesh topoChangerFvMesh decompositionMethods; do
+    test -f "$FOAM_LIBBIN/lib$lib.so" || {
+        echo "Missing OpenFOAM library: $FOAM_LIBBIN/lib$lib.so" >&2
+        exit 1
+    }
+done
+export WM_NCOMPPROCS=$jobs
+mkdir -p "$FOAM_USER_LIBBIN" "$FOAM_USER_APPBIN" "$root/logs"
+log=$(mktemp "$root/logs/build.XXXXXXXX.log")
+exec > >(tee "$log") 2>&1
+IFS= read -r release < "$root/VERSION"
+printf 'Release=%s\n' "$release"
+printf 'OpenFOAM=%s WM_OPTIONS=%s jobs=%s\n' "$WM_PROJECT_VERSION" "$WM_OPTIONS" "$jobs"
+printf 'Source root: %s\n' "$root"
+g++ --version
+for module in basic molecularDynamics/general dsmc; do
+    wmake -j "$jobs" libso "$root/src/lagrangian/$module"
+done
+for app in solvers/discreteMethods/dsmc/dsmcFoam+ utilities/preProcessing/dsmc/dsmcInitialise+; do
+    wmake -j "$jobs" "$root/applications/$app"
+done
+"$root/tests/check-installation.sh"
+echo "MCOR_BUILD_PASS"

@@ -1,0 +1,8 @@
+FoamFile {version 2.0; format ascii; class dictionary; object topoSetDict;}
+
+actions (
+{name outerRefine; type cellSet; action new; source boxToCell;
+sourceInfo {box (-0.0070000000000000001 -0.0070000000000000001 -0.0070000000000000001) (0.0070000000000000001 0.0070000000000000001 0.0070000000000000001);}}
+{name outerRefine; type cellSet; action delete; source cylinderToCell;
+sourceInfo {p1 (-0.0070000000000000001 0 0); p2 (0.0070000000000000001 0 0); radius 0.001;}}
+);
